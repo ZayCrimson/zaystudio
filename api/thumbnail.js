@@ -1,58 +1,90 @@
-import { createCanvas, loadImage } from 'canvas'
-
-export default async function handler(req, res) {
+export default function handler(req, res) {
   const { 
     title = "Welcome", 
-    desc = "Zay Dev", 
-    img 
+    desc = "Selamat Datang", 
+    img = "https://telegra.ph/file/95670d63378f74210f03.png" 
   } = req.query
 
-  const canvas = createCanvas(800, 400)
-  const ctx = canvas.getContext('2d')
+  const safeTitle = encodeURIComponent(title)
+  const safeDesc = encodeURIComponent(desc)
+  const safeImg = encodeURI(img)
 
-  // background
-  ctx.fillStyle = "#0f172a"
-  ctx.fillRect(0, 0, 800, 400)
+  res.setHeader("Content-Type", "text/html; charset=utf-8")
+  res.setHeader("Cache-Control", "public, max-age=0, must-revalidate")
 
-  // function rounded avatar
-  function roundRect(ctx, x, y, width, height, radius) {
-    ctx.beginPath()
-    ctx.moveTo(x + radius, y)
-    ctx.lineTo(x + width - radius, y)
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
-    ctx.lineTo(x + width, y + height - radius)
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
-    ctx.lineTo(x + radius, y + height)
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
-    ctx.lineTo(x, y + radius)
-    ctx.quadraticCurveTo(x, y, x + radius, y)
-    ctx.closePath()
-    ctx.clip()
-  }
+  res.send(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>${title}</title>
 
-  // load avatar
-  let avatar
-  try {
-    avatar = await loadImage(img)
-  } catch {
-    avatar = await loadImage("https://telegra.ph/file/95670d63378f74210f03.png")
-  }
+    <!-- OG -->
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${desc}" />
+    <meta property="og:image" content="${safeImg}" />
+    <meta property="og:type" content="website" />
 
-  // draw avatar (rounded kotak)
-  ctx.save()
-  roundRect(ctx, 70, 120, 160, 160, 25)
-  ctx.drawImage(avatar, 70, 120, 160, 160)
-  ctx.restore()
+    <!-- Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  // text
-  ctx.fillStyle = "#ffffff"
-  ctx.font = "bold 42px Sans-serif"
-  ctx.fillText(title, 280, 170)
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #0f172a;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+      }
+      .card {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        max-width: 300px;
+      }
+      img {
+        width: 120px;
+        height: 120px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        object-fit: cover;
+      }
+      h1 {
+        margin: 10px 0;
+        font-size: 22px;
+      }
+      p {
+        color: #cbd5e1;
+        font-size: 14px;
+      }
+      .btn {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 20px;
+        background: #22c55e;
+        color: black;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    </style>
+  </head>
 
-  ctx.font = "24px Sans-serif"
-  ctx.fillStyle = "#cbd5e1"
-  ctx.fillText(desc, 280, 220)
+  <body>
+    <div class="card">
+      <img src="${safeImg}" />
+      <h1>${title}</h1>
+      <p>${desc}</p>
 
-  res.setHeader("Content-Type", "image/png")
-  res.send(canvas.toBuffer())
+      <a class="btn" href="https://whatsapp.com/channel/0029Vb7cmHW42DcZf5Gdgk2p">
+        Join Channel
+      </a>
+    </div>
+  </body>
+  </html>
+  `)
 }
