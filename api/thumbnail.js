@@ -2,11 +2,9 @@ export default function handler(req, res) {
   const { 
     title = "Welcome", 
     desc = "Selamat Datang", 
-    img = "https://telegra.ph/file/95670d63378f74210f03.png" 
+    img = "https://res.cloudinary.com/dyvfslvvh/image/upload/v1776180226/naze_gyzxhm.png"
   } = req.query
 
-  const safeTitle = encodeURIComponent(title)
-  const safeDesc = encodeURIComponent(desc)
   const safeImg = encodeURI(img)
 
   res.setHeader("Content-Type", "text/html; charset=utf-8")
@@ -18,7 +16,7 @@ export default function handler(req, res) {
   <head>
     <title>${title}</title>
 
-    <!-- OG -->
+    <!-- Open Graph -->
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${desc}" />
     <meta property="og:image" content="${safeImg}" />
